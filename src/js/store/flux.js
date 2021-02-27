@@ -39,21 +39,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 						return data.total_records;
 					})
 					.then(total_records => {
-						// exclude the first request
 						const numberOfPagesLeft = Math.ceil((total_records - 1) / 10);
 						let promises = [];
-						// start at 2 as you already queried the first page
 						for (let i = 2; i <= numberOfPagesLeft; i++) {
-							promises.push(fetch(`https://www.swapi.tech/api/people?page=${i}&limit=10`));
+							promises.push(
+								fetch(`https://www.swapi.tech/api/people?page=${i}&limit=10`).then(response =>
+									response.json()
+								)
+							);
 						}
 						return Promise.all(promises);
 					})
-					.then(response => response.map(res => res.json()))
 					.then(response => {
-						//get the rest records - pages 2 through n.
 						people = response.reduce((acc, data) => [...acc, ...data.results], people);
 						setStore({ people: people });
-						//return people;
 					})
 					.catch(error => console.log("Properly handle your exception here: " + error));
 			},
