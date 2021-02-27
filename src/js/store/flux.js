@@ -28,7 +28,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					fetch().then().then(data => setStore({ "foo": data.bar }))
 				*/
 			},
-			loadAllPeopleData: async => {
+			loadAllPeopleData: () => {
 				let people = [];
 				// first page
 				fetch("https://www.swapi.tech/api/people/?page=1&limit=10")
