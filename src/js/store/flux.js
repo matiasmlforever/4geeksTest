@@ -1,6 +1,10 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
+			favorites: [],
+			people: [],
+			vehicles: [],
+			planets: [],
 			demo: [
 				{
 					title: "FIRST",
@@ -23,6 +27,35 @@ const getState = ({ getStore, getActions, setStore }) => {
 				/**
 					fetch().then().then(data => setStore({ "foo": data.bar }))
 				*/
+			},
+			loadAllPeopleData: async => {
+				let people = [];
+				// first page
+				fetch("https://www.swapi.tech/api/people/?page=1&limit=10")
+					.then(response => response.json())
+					.then(data => {
+						// collect people from first page
+						people = data.results;
+						return data.total_records;
+					})
+					.then(total_records => {
+						// exclude the first request
+						const numberOfPagesLeft = Math.ceil((total_records - 1) / 10);
+						let promises = [];
+						// start at 2 as you already queried the first page
+						for (let i = 2; i <= numberOfPagesLeft; i++) {
+							promises.push(fetch(`https://www.swapi.tech/api/people?page=${i}&limit=10`));
+						}
+						return Promise.all(promises);
+					})
+					.then(response => response.map(res => res.json()))
+					.then(response => {
+						//get the rest records - pages 2 through n.
+						people = response.reduce((acc, data) => [...acc, ...data.results], people);
+						setStore({ people: people });
+						//return people;
+					})
+					.catch(error => console.log("Properly handle your exception here: " + error));
 			},
 			changeColor: (index, color) => {
 				//get the store
