@@ -52,6 +52,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					})
 					.then(response => {
 						people = response.reduce((acc, data) => [...acc, ...data.results], people);
+						console.log(people);
 						setStore({ people: people });
 					})
 					.catch(error => console.log("Properly handle your exception here: " + error));

@@ -26,7 +26,9 @@ export const Home = () => {
 								Some quick example text to build on the card title and make up the bulk of the cards
 								content.
 							</Card.Text>
-							<Button variant="primary">Go somewhere</Button>
+							<Link to={"/details/" + item.uid}>
+								<Button variant="primary">Ver más</Button>
+							</Link>
 						</Card.Body>
 					</Card>
 					/* <li
