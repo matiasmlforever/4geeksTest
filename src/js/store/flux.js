@@ -1,22 +1,10 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			favorites: [],
+			readLater: [],
 			people: [],
 			vehicles: [],
-			planets: [],
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			planets: []
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -28,10 +16,18 @@ const getState = ({ getStore, getActions, setStore }) => {
 					fetch().then().then(data => setStore({ "foo": data.bar }))
 				*/
 			},
+			addToReadLater: item => {
+				const store = getStore();
+				store.readLater.push(item);
+			},
+			removeFromReadLater: item => {
+				store.readLater.pop(item);
+			},
+
 			loadAllPeopleData: () => {
 				let people = [];
 				// first page
-				fetch("https://www.swapi.tech/api/people/?page=1&limit=10")
+				fetch("https://www.swapi.tech/api/people?page=1&limit=10")
 					.then(response => response.json())
 					.then(data => {
 						// collect people from first page
@@ -52,8 +48,63 @@ const getState = ({ getStore, getActions, setStore }) => {
 					})
 					.then(response => {
 						people = response.reduce((acc, data) => [...acc, ...data.results], people);
-						console.log(people);
 						setStore({ people: people });
+					})
+					.catch(error => console.log("Properly handle your exception here: " + error));
+			},
+			loadAllVehicleData: () => {
+				let vehicles = [];
+				// first page
+				fetch("https://www.swapi.tech/api/vehicles?page=1&limit=10")
+					.then(response => response.json())
+					.then(data => {
+						// collect people from first page
+						vehicles = data.results;
+						return data.total_records;
+					})
+					.then(total_records => {
+						const numberOfPagesLeft = Math.ceil((total_records - 1) / 10);
+						let promises = [];
+						for (let i = 2; i <= numberOfPagesLeft; i++) {
+							promises.push(
+								fetch(`https://www.swapi.tech/api/vehicles?page=${i}&limit=10`).then(response =>
+									response.json()
+								)
+							);
+						}
+						return Promise.all(promises);
+					})
+					.then(response => {
+						vehicles = response.reduce((acc, data) => [...acc, ...data.results], vehicles);
+						setStore({ vehicles: vehicles });
+					})
+					.catch(error => console.log("Properly handle your exception here: " + error));
+			},
+			loadAllPlanetsData: () => {
+				let planets = [];
+				// first page
+				fetch("https://www.swapi.tech/api/planets?page=1&limit=10")
+					.then(response => response.json())
+					.then(data => {
+						// collect people from first page
+						planets = data.results;
+						return data.total_records;
+					})
+					.then(total_records => {
+						const numberOfPagesLeft = Math.ceil((total_records - 1) / 10);
+						let promises = [];
+						for (let i = 2; i <= numberOfPagesLeft; i++) {
+							promises.push(
+								fetch(`https://www.swapi.tech/api/planets?page=${i}&limit=10`).then(response =>
+									response.json()
+								)
+							);
+						}
+						return Promise.all(promises);
+					})
+					.then(response => {
+						planets = response.reduce((acc, data) => [...acc, ...data.results], planets);
+						setStore({ planets: planets });
 					})
 					.catch(error => console.log("Properly handle your exception here: " + error));
 			},
