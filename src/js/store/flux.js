@@ -18,9 +18,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			addToReadLater: item => {
 				const store = getStore();
-				store.readLater.push(item);
+				if (store.readLater.filter(value => value == item).length === 0) {
+					store.readLater.push(item);
+				}
 			},
 			removeFromReadLater: item => {
+				const store = getStore();
 				store.readLater.pop(item);
 			},
 

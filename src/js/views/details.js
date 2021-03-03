@@ -9,15 +9,6 @@ import { Context } from "../store/appContext";
 
 import "../../styles/demo.scss";
 
-async function getDetail(url) {
-	await fetch(url)
-		.then(response => response.json())
-		.then(data => {
-			return data.result;
-		})
-		.catch(error => console.log("Properly handle your exception here: " + error));
-}
-
 export const Details = props => {
 	const [url, setItem] = useState(props.location.swapiUrl);
 	const [itemDetail, setItemDetail] = useState({ properties: { name: "" } });
@@ -39,6 +30,7 @@ export const Details = props => {
 		<div>
 			<div className="container">DETALLES TEST</div>
 			<h1>{itemDetail.properties.name}</h1>
+			<div>{Object.entries(itemDetail.properties)}</div>
 			<button onClick={() => history.goBack()}>Volver</button>
 		</div>
 	);
